@@ -1,0 +1,21 @@
+.DS_Store
+node_modules/
+/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+/clover-slt-manager*.tgz
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+/dist.tar
+/test.js
+/Filchive.md
+/.editorconfig
+/.gitlab-ci.yml
