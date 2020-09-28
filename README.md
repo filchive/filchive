@@ -1,6 +1,6 @@
-# Exagate-Pool-Web
+# Filchive
 
-> Backend Web For Exagate-Pool
+*A FileCoin Version of Internet Archive*
 
 ## Build Setup
 
