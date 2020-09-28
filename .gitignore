@@ -19,3 +19,4 @@ yarn-error.log*
 /Filchive.md
 /.editorconfig
 /.gitlab-ci.yml
+/filkit.js

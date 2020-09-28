@@ -17,7 +17,7 @@
 	    </el-aside>
 	    <el-main>
 			<el-table :data="tableData" >
-				<el-table-column label="Name">
+				<el-table-column label="Title">
 					<template v-slot="scope">
 						<el-link><i class="el-icon-film"></i>{{scope.row.name}}</el-link>
 					</template>
@@ -25,6 +25,15 @@
 				<el-table-column label="Creator" prop="creator" width="250"></el-table-column>
 				<el-table-column label="AddDate" prop="addDate" width="250"></el-table-column>
 			</el-table>
+		    <el-pagination
+			    layout="prev, pager, next, jumper, total"
+			    background
+			    :current-page1="1"
+			    :page-count="100"
+			    :page-size="100"
+			    style="margin-top: 1em"
+		    >
+		    </el-pagination>
 	    </el-main>
     </el-container>
 </template>
@@ -50,6 +59,41 @@
                         creator: 'Bane',
                         addDate: '2015-11-26 20:04:00'
                     },
+                    {
+                        name: 'O Shahade Amira Imarata Kavkaz Dokku Abu Usmana',
+                        creator: 'Kavkaz TV',
+                        addDate: '2014-07-20 10:26:36'
+                    },
+                    {
+                        name: 'israelbicepilp',
+                        creator: 'israelbicepilp',
+                        addDate: '2011-05-28 18:17:31'
+                    },
+                    {
+                        name: 'Medical Videos - 05 Normal Spontsneous vaginal delivery - Obstetrics and Gynecology.',
+                        creator: 'mvbirth',
+                        addDate: '2010-10-23 05:09:30'
+                    },
+                    {
+                        name: 'Dokku_obrash',
+                        creator: 'Dokku_obrash',
+                        addDate: '2014-10-30 18:21:35'
+                    },
+                    {
+                        name: 'His new job ( Charles Chaplin-1915)',
+                        creator: 'Faluu',
+                        addDate: '2012-08-02 21:50:12'
+                    },
+                    {
+                        name: 'unlimited_earning_trick_on_mobile_premier_league_mpl',
+                        creator: 'mbelong',
+                        addDate: '2020-01-29 15:44:19'
+                    },
+                    {
+                        name: 'Wanyed Mbuapa',
+                        creator: 'Sitampan',
+                        addDate: '2018-05-09 17:29:48'
+                    }
                 ],
 	            topics:[
 	                'video', 'Twitter', 'news', 'music', 'story'

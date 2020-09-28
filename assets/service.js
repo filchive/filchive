@@ -5,7 +5,7 @@ const path = require('path');
 
 
 async function retrieveData(dataCid, outFile){
-	 let dest = path.join(retrievePath, outFile);
+	let dest = path.join(retrievePath, outFile);
 	console.log(`start to retrieve data cid:[${dataCid}], path:[${dest}]`);
 	try{
 		let queryOfferRet = await lotus.ClientMinerQueryOffer('t01782', dataCid);
@@ -35,17 +35,17 @@ async function retrieveData(dataCid, outFile){
 }
 
 async function storeData(file){
-	console.log(`start store data, path:[${path}]`)
+	console.log(`start store data, path:[${file}]`)
 	try {
 		let minerInfoRet = await lotus.StateMinerInfo('t01782');
 		let peerId = minerInfoRet.result.PeerId;
 		if(!peerId){
 			throw new Error('get peerId failed');
 		}
-		let importRet =  await lotus.ClientImport(path);
+		let importRet =  await lotus.ClientImport(file);
 		console.log(importRet);
-		if(!(importRet && importRet.result && importRet.result.Root)){
-			throw new Error('get data cid failed');
+		if(!(importRet && importRet.result && importRet.result.Root) || importRet.error){
+			throw new Error('import failed');
 		}
 		const { '/': dataCid } = importRet.result.Root;
 		console.log(`dataCid:[${dataCid}]`);
