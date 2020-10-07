@@ -18,28 +18,21 @@
             <el-divider style="margin: 0"></el-divider>
         </el-header>
         <el-main>
-	        <browser ref="download"></browser>
+	        <router-view></router-view>
         </el-main>
     </el-container>
 </template>
 
 <script>
     import Browser from './Browser';
-
     export default {
         components: { Browser },
         data() {
             return {
-                currentTab: '1',
-                msgCount: 0,
-                lang: this.$i18n.locale
+                lang: this.$i18n.locale,
             };
         },
         methods: {
-            newTask(hash, filename) {
-                console.log('newTask:' + hash);
-                this.$refs.download.beforeStart({}, hash, filename);
-            },
             changeLang(value) {
                 this.$i18n.locale = value;
             }

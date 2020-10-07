@@ -22,6 +22,7 @@
 		"font-awesome": "^4.7.0",
 		"moment": "^2.25.0",
 		"spawn-promise": "^0.1.8",
+		"video.js": "^7.8.4",
 		"vue": "^2.5.2",
 		"vue-i18n": "^8.21.1",
 		"vuex": "^3.5.1"

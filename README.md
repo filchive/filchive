@@ -18,7 +18,11 @@ npm run build
 npm run build --report
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
-
+##Usage
+```bash
+# run app
+export LOTUS_API=url of you lotus api
+export LOTUS_TOKEN=your lotus token
+node ./server.js [port]
 
 

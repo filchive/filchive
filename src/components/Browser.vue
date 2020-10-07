@@ -16,22 +16,23 @@
 		    </div>
 	    </el-aside>
 	    <el-main>
-			<el-table :data="tableData" >
+			<el-table :data="content" >
 				<el-table-column label="Title">
 					<template v-slot="scope">
-						<el-link><i class="el-icon-film"></i>{{scope.row.name}}</el-link>
+						<el-link @click.stop="()=>{$router.push({name:'player', params: {meta: scope.row, page: currentPage}})}"><i class="el-icon-film"></i>{{scope.row.metadata.title}}</el-link>
 					</template>
 				</el-table-column>
-				<el-table-column label="Creator" prop="creator" width="250"></el-table-column>
-				<el-table-column label="AddDate" prop="addDate" width="250"></el-table-column>
+				<el-table-column label="Creator" prop="metadata.creator" width="250"></el-table-column>
+				<el-table-column label="AddDate" prop="metadata.addeddate" width="250"></el-table-column>
 			</el-table>
 		    <el-pagination
+			    v-if="showPagination"
 			    layout="prev, pager, next, jumper, total"
 			    background
-			    :current-page1="1"
-			    :page-count="100"
-			    :page-size="100"
+			    :current-page.sync="currentPage"
+			    :page-count="pageCount"
 			    style="margin-top: 1em"
+			    @current-change="getContent"
 		    >
 		    </el-pagination>
 	    </el-main>
@@ -40,73 +41,49 @@
 
 <script>
     import moment from 'moment';
+    import api from '../assets/js/api'
     export default {
         data() {
             return {
-                tableData: [
-	                {
-	                    name: 'Namaz nasıl kılınır?',
-		                creator: 'Namaz Zamanı',
-		                addDate: '2019-12-26 19:31:09'
-	                },
-                    {
-                        name: 'El Senor Es Bueno Gracias Por Todooos',
-                        creator: 'CHINO1986',
-                        addDate: '2020-02-05 19:44:55'
-                    },
-                    {
-                        name: 'cCloud TV v0.6 Rise',
-                        creator: 'Bane',
-                        addDate: '2015-11-26 20:04:00'
-                    },
-                    {
-                        name: 'O Shahade Amira Imarata Kavkaz Dokku Abu Usmana',
-                        creator: 'Kavkaz TV',
-                        addDate: '2014-07-20 10:26:36'
-                    },
-                    {
-                        name: 'israelbicepilp',
-                        creator: 'israelbicepilp',
-                        addDate: '2011-05-28 18:17:31'
-                    },
-                    {
-                        name: 'Medical Videos - 05 Normal Spontsneous vaginal delivery - Obstetrics and Gynecology.',
-                        creator: 'mvbirth',
-                        addDate: '2010-10-23 05:09:30'
-                    },
-                    {
-                        name: 'Dokku_obrash',
-                        creator: 'Dokku_obrash',
-                        addDate: '2014-10-30 18:21:35'
-                    },
-                    {
-                        name: 'His new job ( Charles Chaplin-1915)',
-                        creator: 'Faluu',
-                        addDate: '2012-08-02 21:50:12'
-                    },
-                    {
-                        name: 'unlimited_earning_trick_on_mobile_premier_league_mpl',
-                        creator: 'mbelong',
-                        addDate: '2020-01-29 15:44:19'
-                    },
-                    {
-                        name: 'Wanyed Mbuapa',
-                        creator: 'Sitampan',
-                        addDate: '2018-05-09 17:29:48'
-                    }
-                ],
+                content: [],
 	            topics:[
 	                'video', 'Twitter', 'news', 'music', 'story'
 	            ],
 	            form: {},
-	            search: ''
+	            search: '',
+	            pageCount : 0,
+	            currentPage: 1,
+                showPagination: true
             };
         },
         methods: {
-
+			getPageCount(){
+			    api.getPageCount((err, count)=>{
+			        if(err){
+			            console.log(err);
+			            return;
+			        }
+			        this.pageCount = parseInt(count);
+			    })
+			},
+	        getContent(){
+			    api.getContent(this.currentPage, (err, content)=>{
+                    if(err){
+                        console.log(err);
+                        return;
+                    }
+                    this.content = content;
+			    })
+	        }
         },
         mounted() {
-            //  this.init();
+            this.getPageCount();
+            this.showPagination = false;
+            if (this.$route.params.page) {
+                this.currentPage = this.$route.params.page;
+            }
+            this.showPagination = true;
+            this.getContent(this.currentPage);
         }
     };
 </script>
