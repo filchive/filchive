@@ -22,7 +22,7 @@
 						<el-link @click.stop="()=>{$router.push({name:'player', params: {meta: scope.row, page: currentPage}})}"><i class="el-icon-film"></i>{{scope.row.metadata.title}}</el-link>
 					</template>
 				</el-table-column>
-				<el-table-column label="Creator" prop="metadata.creator" width="250"></el-table-column>
+				<el-table-column label="Creator" prop="metadata.creator" width="350"></el-table-column>
 				<el-table-column label="AddDate" prop="metadata.addeddate" width="250"></el-table-column>
 			</el-table>
 		    <el-pagination
@@ -67,7 +67,11 @@
 			    })
 			},
 	        getContent(){
-			    api.getContent(this.currentPage, (err, content)=>{
+                this.content = [];
+                let page = this.$route.params.page;
+                this.$route.params.page = null;
+			    api.getContent(page || this.currentPage, (err, content)=>{
+				    this.currentPage = page || this.currentPage; //the el-pagination's bug
                     if(err){
                         console.log(err);
                         return;
@@ -78,13 +82,9 @@
         },
         mounted() {
             this.getPageCount();
-            this.showPagination = false;
-            if (this.$route.params.page) {
-                this.currentPage = this.$route.params.page;
-            }
-            this.showPagination = true;
-            this.getContent(this.currentPage);
-        }
+            this.getContent();
+
+        },
     };
 </script>
 
