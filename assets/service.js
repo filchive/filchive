@@ -2,13 +2,24 @@ const lotus = require('./lotus.js')
 const conf = require('../conf.js')
 const retrievePath = conf.retrievePath;
 const path = require('path');
+const fs = require('fs');
 
 
-async function retrieveData(dataCid, outFile){
-	let dest = path.join(retrievePath, outFile);
-	console.log(`start to retrieve data cid:[${dataCid}], path:[${dest}]`);
+async function retrieveData(miner, dataCid, id){
+	let destDir = path.join(retrievePath, id);
+	let destFile = `${path.join(destDir, dataCid)}.mp4`
+	console.log(`start to retrieve data cid:[${dataCid}], path:[${destDir}]`);
+	if(fs.existsSync(destFile)){
+		return {file: destFile};
+	}
+	if(!fs.existsSync(destDir)){
+		fs.mkdirSync(destDir, {
+			recursive: true,
+		});
+		fs.chmodSync(destDir, 0o777);
+	}
 	try{
-		let queryOfferRet = await lotus.ClientMinerQueryOffer('t01782', dataCid);
+		let queryOfferRet = await lotus.ClientMinerQueryOffer(miner, dataCid);
 		if(!queryOfferRet || !queryOfferRet.result || queryOfferRet.result.Err){
 			throw new Error('query offer failed');
 		};
@@ -26,7 +37,9 @@ async function retrieveData(dataCid, outFile){
 			Miner: o.Miner,
 			MinerPeer: o.MinerPeer
 		}
-		return await lotus.ClientRetrieve(retrievalOffer, dest);
+		let ret = await lotus.ClientRetrieve(retrievalOffer, destFile);
+		ret['file'] = destFile;
+		return ret;
 
 	}catch (e) {
 		console.log(e);
@@ -34,70 +47,7 @@ async function retrieveData(dataCid, outFile){
 	}
 }
 
-async function storeData(file){
-	console.log(`start store data, path:[${file}]`)
-	try {
-		let minerInfoRet = await lotus.StateMinerInfo('t01782');
-		let peerId = minerInfoRet.result.PeerId;
-		if(!peerId){
-			throw new Error('get peerId failed');
-		}
-		let importRet =  await lotus.ClientImport(file);
-		console.log(importRet);
-		if(!(importRet && importRet.result && importRet.result.Root) || importRet.error){
-			throw new Error('import failed');
-		}
-		const { '/': dataCid } = importRet.result.Root;
-		console.log(`dataCid:[${dataCid}]`);
-		let dealSizeRet = await lotus.ClientDealSize(dataCid);
-		let queryAskRet = await lotus.ClientQueryAsk(peerId, 't01782');
-		let epochPrice = calculateStorageDealPrice(queryAskRet.result.Ask.Price, dealSizeRet.result.PieceSize);
-		const {'result': {'Height': chainHeight}} = await lotus.ChainHead();
-		const {'result': wallet} = await lotus.WalletDefaultAddress();
-		let dataRef = {
-			Data: {
-				TransferType: 'graphsync',
-				Root: {
-					'/': dataCid
-				},
-				PieceCid: null,
-				PieceSize: 0
-			},
-			Wallet: wallet,
-			Miner: 't01782',
-			EpochPrice: epochPrice,
-			MinBlocksDuration: 700000,
-			FastRetrieval: true,
-			DealStartEpoch: chainHeight + 5760,
-		}
-		return await lotus.ClientStartDeal(dataRef);
-	}catch (e) {
-		console.log(e);
-		throw new Error('store data failed');
-	}
-}
-
-async function queryData(dealCid){
-	let dealInfo = await lotus.ClientGetDealInfo(dealCid);
-	console.log(dealInfo);
-	return dealInfo;
-}
-
-function calculateStorageDealPrice(askPrice, pieceSize) {
-	const BigNumber = require('bignumber.js');
-
-	let ask = new BigNumber(askPrice).multipliedBy(pieceSize);
-	let gib = 1 << 30;
-
-	let epochPrice = ask.dividedBy(gib).decimalPlaces(0);
-
-	return epochPrice.toString(10);
-}
-
-
 module.exports = {
-	storeData,
-	retrieveData,
-	queryData
+	retrieveData
 }
 

@@ -2,7 +2,7 @@
     <el-container>
         <el-header id="account" height="5em" style="margin: 1em 1.5em 0 1.5em">
             <div style="text-align: left">
-	            <img src="../assets/img/filchive.png" style="height: 3.5em">
+	            <a href="/"><img src="../assets/img/filchive.png" style="height: 3.5em"></a>
 	            <div style="text-align: right; float: right; margin-top: 1.8em">
 		            <i class="fa fa-globe fa-lg" aria-hidden="true" style="color: cornflowerblue;"></i>
 		            <el-select v-model="lang" @change="changeLang" size="mini" style="width: 100px;">

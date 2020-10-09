@@ -4,6 +4,7 @@ const router = express.Router();
 const service = require('../assets/service');
 const nsUrl = 'https://filchive.github.io/';
 const axios = require('axios');
+const fs = require('fs');
 
 
 router.get('/test', (req, res) => {
@@ -44,32 +45,27 @@ router.get('/page/:page', (req, res) => {
 	}
 })
 
-router.post('/store', (req, res, next) => {
-	console.log(req.files[0]);
-	service.storeData(req.files[0].path).then((ret) => {
-		console.log(ret);
-		res.json({
-			result: 'ok'
-		});
-	}).catch((e) => {
-		console.log(e);
-		res.json({
-			result: 'failed',
-			message: e.message
-		})
-	})
-});
 
-router.post('/retrieve', (req, res, next) => {
+router.get('/retrieve', (req, res, next) => {
 	const {
+		miner: miner,
 		dataCid: dataCid,
-		outFile: outFile
-	} = req.body;
-	service.retrieveData(dataCid, outFile).then(ret => {
+		id: id
+	} = req.query;
+	service.retrieveData(miner, dataCid, id).then(ret => {
 		console.log(ret);
-		res.json({
-			result: 'ok'
-		});
+		if(ret.error){
+			console.log(ret.error);
+			res.json({
+				result: 'failed',
+				message: ret.error.message
+			});
+		}else{
+			res.append('Content-Type', 'video/mp4');
+			let rs = fs.createReadStream(ret.file).on('open', ()=>{
+				rs.pipe(res);
+			}).on('error', err=>console.log(err));
+		}
 	}).catch(e => {
 		res.json({
 			result: 'failed',

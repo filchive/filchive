@@ -32,9 +32,12 @@ function callApi(path, method, callback, data) {
             if (buff.length > 0) {
 				let contentType = resp.headers['content-type'];
 				console.log(contentType);
-				if(contentType &&contentType.startsWith('application/json')){
+
+				if(contentType && contentType.startsWith('application/json')){
 					console.log(Buffer.concat(buff).toString())
 					data = JSON.parse(Buffer.concat(buff).toString());
+				}else if(contentType && contentType.startsWith('video/mpeg')){
+					data = Buffer.concat(buff);
 				}else{
 					data = Buffer.concat(buff).toString();
 				}
@@ -76,6 +79,9 @@ export default {
 	},
 	getContent(page, callback){
     	get(`page/${page}`, callback)
+	},
+	loadVideo(cri, callback) {
+		get(`retrieve?${querystring.stringify(cri)}`, callback)
 	}
 
 }
