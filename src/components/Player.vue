@@ -1,35 +1,47 @@
 <template>
 	<div>
-		<el-page-header @back="goBack" style="margin: 0 0 20px 20px"></el-page-header>
-		<el-card shadow="never" style="width: 70%; float: left;text-align: center">
-			<h1 slot="header">{{meta.metadata.title}}</h1>
-			<video
-				class="video-js vjs-layout-medium vjs-default-skin vjs-big-play-centered"
-				ref="player"
-			>
-			</video>
-		</el-card>
-<!--		<el-row >-->
-<!--			<el-col :span="16">-->
-<!--				<div style="text-align: center; position: relative; padding: auto; margin: auto">-->
-<!--					<h1>{{meta.metadata.title}}</h1>-->
-<!--					<video-->
-<!--						class="video-js vjs-layout-medium vjs-default-skin vjs-big-play-centered"-->
-<!--						ref="player"-->
-<!--						style="float: right"-->
-<!--					>-->
-<!--					</video>-->
-<!--				</div>-->
-<!--			</el-col>-->
-<!--			<el-col>-->
-<!--				1243-->
-<!--			</el-col>-->
-<!--		</el-row>-->
+		<el-row>
+			<el-col :span="24">
+				<el-page-header @back="goBack" style="margin: 0 0 20px 20px"></el-page-header>
+			</el-col>
+		</el-row>
+		<el-row>
+			<el-col :span="18">
+				<el-card shadow="never" style="width: 100%; float: left;text-align: center;">
+					<h1 slot="header">{{metadata.metadata.title}}</h1>
+					<video
+						class="video-js vjs-layout-medium vjs-default-skin vjs-big-play-centered"
+						ref="player"
+					>
+					</video>
+				</el-card>
+			</el-col>
+			<el-col :span="6">
+				<div>
+					<el-card shadow="never" style="width: 90%; text-align: left; display: inline-block; line-height: 2em">
+						<span slot="header" style="margin-left: 1em"><b>Metadata</b></span>
+						<div style="margin-left: 2em">
+							<b>Identifier</b>: {{metadata.metadata.identifier}}<br>
+							<b>Subject</b>: {{metadata.metadata.subject}}<br>
+							<b>Collection</b>: {{metadata.metadata.collection}}<br>
+							<b>Description</b>: {{metadata.metadata.description}}<br>
+							<b>Add Date</b>: {{metadata.metadata.addeddate}}<br>
+							<b>Uploader</b>: {{metadata.metadata.uploader}}<br>
+						</div>
+					</el-card>
+					<el-card shadow="never" style="width: 90%; text-align: left; display: inline-block; line-height: 2em">
+						<span slot="header" style="margin-left: 1em"><b>Files</b></span>
+						<div style="margin-left: 2em">
+							<p v-for="(file, index) in metadata.files"><el-button type="text" @click="loadVideo(index)">{{file.name}}</el-button></p>
+						</div>
+					</el-card>
+				</div>
+			</el-col>
+		</el-row>
 	</div>
 </template>
 
 <script>
-    import api from '../assets/js/api'
     import videojs from 'video.js'
     import 'video.js/dist/video-js.css'
     const querystring = require('querystring')
@@ -38,8 +50,8 @@
         name: "Player",
         data() {
             return {
-                currentFile: 0,
                 player: null,
+	            metadata: null,
                 options: {
                     autoplay: false,
 	                preload: 'none',
@@ -62,11 +74,11 @@
                     }
                 });
             },
-            loadVideo() {
-                let cid = this.meta.files[this.currentFile].cid;
-                let id = this.meta.metadata.identifier;
+            loadVideo(index) {
+                let cid = this.metadata.files[index].cid;
+                let id = this.metadata.metadata.identifier;
                 //let filename = `${this.meta.files[this.currentFile].name}.mp4`;
-                let miner = this.meta.deals[this.currentFile].miner;
+                let miner = this.metadata.deals[index].miner;
                 this.options.sources.push({
 					src: `/api/retrieve?${querystring.stringify({miner: miner, dataCid: cid, id: id})}`,
 	                type: 'video/mp4'
@@ -80,11 +92,20 @@
                 // })
             }
         },
+	    beforeMount(){
+            if(this.meta){
+                this.metadata = this.meta;
+                localStorage.metadata = JSON.stringify(this.metadata);
+            }else{
+                this.metadata = JSON.parse(localStorage.metadata);
+            }
+	    },
         mounted() {
             console.log(this.meta);
-            this.loadVideo();
+            console.log(this.metadata);
             this.player = videojs(this.$refs.player, this.options, ()=> {
             })
+            this.loadVideo(0);
         },
         beforeDestroy() {
             if (this.player) {
@@ -95,5 +116,6 @@
 </script>
 
 <style scoped>
-
+ /deep/ .el-card__header {padding: 0 !important;}
+ /deep/ .el-card__body {padding: 0 !important;}
 </style>
