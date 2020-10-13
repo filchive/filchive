@@ -78,18 +78,11 @@
                 let cid = this.metadata.files[index].cid;
                 let id = this.metadata.metadata.identifier;
                 //let filename = `${this.meta.files[this.currentFile].name}.mp4`;
-                let miner = this.metadata.deals[index].miner;
-                this.options.sources.push({
+                let miner = this.metadata.files[index].deals[index].miner;
+                this.options.sources=[{
 					src: `/api/retrieve?${querystring.stringify({miner: miner, dataCid: cid, id: id})}`,
 	                type: 'video/mp4'
-                })
-                // api.loadVideo({miner: miner, dataCid: cid, id: id}, (err, data) => {
-                //     if (err) {
-                //         console.log(err);
-                //         return;
-                //     }
-                //     console.log(data);
-                // })
+                }]
             }
         },
 	    beforeMount(){
@@ -103,9 +96,9 @@
         mounted() {
             console.log(this.meta);
             console.log(this.metadata);
+            this.loadVideo(0);
             this.player = videojs(this.$refs.player, this.options, ()=> {
             })
-            this.loadVideo(0);
         },
         beforeDestroy() {
             if (this.player) {
