@@ -1,6 +1,6 @@
 'use strict';
 
-const config = require('./config');
+const config = require('../conf');
 var spawn = require("spawn-promise");
 
 let api = config.lotus.api;

@@ -19,10 +19,11 @@ npm run build --report
 ```
 
 ##Usage
+###Configuration
+config the 'lotus' part of conf.js or set the Lotus API URL and token in your environment variable 
+config the retrievePath of conf.js and make sure your Lotus daemon has the write permission
 ```bash
 # run app
-export LOTUS_API=url of you lotus api
-export LOTUS_TOKEN=your lotus token
 node ./server.js [port]
 
 
